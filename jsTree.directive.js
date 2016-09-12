@@ -8,7 +8,20 @@
 
 var ngJSTree = angular.module('jsTree.directive', []);
 ngJSTree.directive('jsTree', ['$http', function($http) {
-
+	function deepFind(obj, path) {
+	  var paths = path.split('.')
+	    , current = obj
+	    , i;
+	
+	  for (i = 0; i < paths.length; ++i) {
+	    if (current[paths[i]] == undefined) {
+	      return undefined;
+	    } else {
+	      current = current[paths[i]];
+	    }
+	  }
+	  return current;
+	}
   var treeDir = {
     restrict: 'EA',
     fetchResource: function(url, cb) {
@@ -114,7 +127,7 @@ ngJSTree.directive('jsTree', ['$http', function($http) {
         } else if (a.treeData == 'scope') {
           s.$watch(a.treeModel, function(n, o) {
             if (n) {
-              config.core.data = s[a.treeModel];
+              config.core.data = deepFind(s,a.treeModel);
               $(e).jstree('destroy');
               treeDir.init(s, e, a, config);
             }
